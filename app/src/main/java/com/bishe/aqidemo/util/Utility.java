@@ -7,6 +7,7 @@ import android.util.Log;
 import com.bishe.aqidemo.db.Pm25DB;
 import com.bishe.aqidemo.model.MeasureData;
 import com.bishe.aqidemo.model.Node;
+import com.bishe.aqidemo.model.PersonalData;
 import com.bishe.aqidemo.model.Rank;
 import com.bishe.aqidemo.model.WeatherData;
 
@@ -117,6 +118,36 @@ public class Utility {
                 ranks.add(rank);
             }
             return ranks;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * 解析个人发布数据Json
+     */
+    public synchronized static ArrayList<PersonalData> handlePersonalData(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            String result = jsonObject.getString("result");
+            if (result.equals("true")) {
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
+                ArrayList<PersonalData> personalDatas = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject object = jsonArray.getJSONObject(i);
+                    PersonalData personalData = new PersonalData();
+                    personalData.setUname(object.getString("data_uname"));
+                    personalData.setCity(object.getString("data_city"));
+                    personalData.setId(object.getInt("data_id"));
+                    personalData.setLat(object.getDouble("data_lat"));
+                    personalData.setLon(object.getDouble("data_lon"));
+                    personalData.setPm25(object.getDouble("data_pm25"));
+                    personalData.setPm10(object.getDouble("data_pm10"));
+                    personalData.setTime(object.getString("data_time"));
+                    personalDatas.add(personalData);
+                }
+                return personalDatas;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -206,7 +206,7 @@ public class HttpUtil {
     /**
      * OKHttp访问网络GET方法
      */
-    public void runOkHttpGet(final OkHttpClient client, final String url, final Handler handler) {
+    public void runOkHttpGet(final OkHttpClient client, final String url, final Handler handler, final int i) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -215,7 +215,7 @@ public class HttpUtil {
                     Response response = client.newCall(request).execute();
                     String resStr = response.body().string();
                     Message message = new Message();
-                    message.what = 0;
+                    message.what = i;
                     message.obj = resStr;
                     handler.sendMessage(message);
                 } catch (IOException e) {

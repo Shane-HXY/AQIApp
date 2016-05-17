@@ -12,14 +12,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bishe.aqidemo.R;
 import com.bishe.aqidemo.model.PersonalData;
 import com.bishe.aqidemo.util.HttpUtil;
+import com.bishe.aqidemo.util.Utility;
 import com.bishe.aqidemo.widget.CommViewAdapter;
 
 import java.util.ArrayList;
@@ -37,8 +41,11 @@ public class CommunityActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private CommViewAdapter mRecyclerViewAdapter;
     private LinearLayoutManager layoutManager;
+    private EditText mEditText;
+    private Button mButton;
 
     List<PersonalData> personalDataList = new ArrayList<>();
+    String getText = null;
 
     String url = "http://10.0.2.2:8080/AqiWeb/commServlet";
 
@@ -49,6 +56,7 @@ public class CommunityActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("data", MODE_PRIVATE);
         final String username = pref.getString("username", "");
         final String userId = pref.getString("userId", "");
+        final OkHttpClient client = new OkHttpClient();
 //        Toolbar
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar_c);
         if (mToolbar != null) {
@@ -141,13 +149,26 @@ public class CommunityActivity extends AppCompatActivity {
                 }
             });
         }
+        mEditText = (EditText) findViewById(R.id.edit_where);
+        mButton = (Button) findViewById(R.id.button_where);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mEditText.getText().toString().trim().equals("")) {
+                    getText = mEditText.getText().toString().trim();
+                    url = "http://10.0.2.2:8080/AqiWeb/commServlet?userId=" + userId + "&where=" + getText;
+                    new HttpUtil().runOkHttpGet(client, url, handler, 1);
+                } else {
+                    url = "http://10.0.2.2:8080/AqiWeb/commServlet?userId=" + userId;
+                    new HttpUtil().runOkHttpGet(client, url, handler, 1);
+                }
+            }
+        });
 //        Main Method
         layoutManager = new LinearLayoutManager(CommunityActivity.this);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_peer);
-
-        url += "?userId=" + userId + "&where=" + "\"苍南\"";
-        OkHttpClient client = new OkHttpClient();
-        new HttpUtil().runOkHttpGet(client, url, handler);
+        url = "http://10.0.2.2:8080/AqiWeb/commServlet?userId=" + userId;
+        new HttpUtil().runOkHttpGet(client, url, handler, 0);
 
     }
 
@@ -194,8 +215,19 @@ public class CommunityActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    //Log.i("TAG", msg.obj.toString());
+                    personalDataList = Utility.handlePersonalData(msg.obj.toString());
                     mRecyclerViewAdapter = new CommViewAdapter(personalDataList, CommunityActivity.this);
+                    mRecyclerView.setHasFixedSize(true);
+                    mRecyclerView.setLayoutManager(layoutManager);
+                    mRecyclerView.setAdapter(mRecyclerViewAdapter);
+                    break;
+                case 1:
+                    if (personalDataList != null) {
+                        personalDataList.clear();
+                    }
+                    personalDataList = Utility.handlePersonalData(msg.obj.toString());
+                    mRecyclerViewAdapter = new CommViewAdapter(personalDataList, CommunityActivity.this);
+                    mRecyclerViewAdapter.notifyDataSetChanged();
                     mRecyclerView.setHasFixedSize(true);
                     mRecyclerView.setLayoutManager(layoutManager);
                     mRecyclerView.setAdapter(mRecyclerViewAdapter);

@@ -37,4 +37,6 @@
 
     <string name="pm25_comm">pm2.5:</string>
     <string name="pm10_comm">pm1 0:</string>
+
+    <string name="hint_where">输入城市名</string>
 </resources>
