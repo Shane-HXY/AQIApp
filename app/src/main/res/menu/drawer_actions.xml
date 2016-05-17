@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/front_navigation_menu_item"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="@string/front_title" />
+
+        <item
+            android:id="@+id/list_navigation_menu_item"
+            android:icon="@drawable/ic_insert_chart_black_24dp"
+            android:title="@string/list_title" />
+
+        <item
+            android:id="@+id/map_navigation_menu_item"
+            android:icon="@drawable/ic_map_black_24dp"
+            android:title="@string/map_title" />
+
+        <item
+            android:id="@+id/community_navigation_menu_item"
+            android:icon="@drawable/ic_dashboard_black_24dp"
+            android:title="@string/community_title" />
+    </group>
+
+    <item android:title="@string/else_menu">
+        <menu>
+            <item
+                android:id="@+id/setting_navigation_menu_item"
+                android:icon="@drawable/ic_settings_black_24dp"
+                android:title="@string/setting_title" />
+        </menu>
+    </item>
+
+</menu>

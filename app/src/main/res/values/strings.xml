@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">PM2.5在线监测系统</string>
+
+    <!--监测指标单位-->
+    <string name="unit">ug/m³</string>
+    <!--温度单位-->
+    <string name="tmp_unit">℃</string>
+    <string name="hum_unit">%</string>
+    <string name="no_data">~</string>
+    <string name="colon">:</string>
+
+    <string name="front_title">首页</string>
+    <string name="list_title">排行榜</string>
+    <string name="map_title">地图</string>
+    <string name="community_title">发布社区</string>
+    <string name="setting_title">设置</string>
+    <string name="else_menu">其他</string>
+
+    <string name="map_head">空气质量地图</string>
+    <string name="list_head">空气质量排行榜</string>
+    <string name="comm_head">个人发布</string>
+
+    <string name="drawer_open">OpenDrawer</string>
+    <string name="drawer_close">CloseDrawer</string>
+
+    <string name="action_search">搜索</string>
+    <string name="action_add">添加</string>
+    <string name="action_about">关于</string>
+
+    <string name="search_hint">输入节点名..</string>
+
+    <string name="front_hint">你还没有关注节点</string>
+    <string name="search_noNode_hint">节点未找到..</string>
+
+    <string name="rank_name">排名</string>
+    <string name="city_name">地区</string>
+    <string name="aqi_name">AQI</string>
+    <string name="pm10_name">pm10</string>
+    <string name="pm25_name">pm2.5</string>
+</resources>
