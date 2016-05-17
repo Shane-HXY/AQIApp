@@ -1,6 +1,5 @@
 package com.bishe.aqidemo.model;
 
-import java.sql.Timestamp;
 
 /**
  * Created by huangxiangyu on 16/5/11.

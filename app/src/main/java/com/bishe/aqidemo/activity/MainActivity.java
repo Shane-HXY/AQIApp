@@ -70,13 +70,14 @@ public class MainActivity extends AppCompatActivity {
     private Pm25DB pm25DB;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         pm25DB = Pm25DB.getInstance(this);
-        username = getIntent().getStringExtra("user_name");
-        userId = getIntent().getStringExtra("user_id");
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        SharedPreferences pref = getSharedPreferences("data", MODE_PRIVATE);
+        final String username = pref.getString("username", "");
+        final String userId = pref.getString("userId", "");
+
 //        Toolbar
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (mToolbar != null) {
@@ -181,15 +182,16 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 //        Main Layout
-
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        //Todo:获取界面展示数据,界面逻辑,若有关注节点则不显示背景提示
         showProgressDialog();
         new HttpUtil().checkFocus(checkAddress, userId, new HttpCallbackListener() {
             @Override
             public void onFinish(final String response) {
                 try {
+                    Log.i("TAG", ">100???");
                     if ((response.length() >= 100 ? "hasFocus" : "noFocus").equals("hasFocus")) {
+                        Log.i("TAG", ">100YES");
                         JSONObject jsonObject = new JSONObject(response);
                         JSONArray nodeArray = jsonObject.getJSONArray("nodes");
                         JSONArray dataArray = jsonObject.getJSONArray("datas");
@@ -225,19 +227,19 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         closeProgressDialog();
                         Toast.makeText(MainActivity.this, "加载失败", Toast.LENGTH_SHORT).show();
+                        //Log.i("TAG", "xxxxxxfailxxxxxx");
                     }
                 });
 
             }
         });
-
     }
 
     private void initWeatherData(List<Node> nodeList, List<MeasureData> measureDataList) {
         mWeatherDataList = new ArrayList<>();
-        //Log.i("TAG", "asdfasdf"+ nodeList.size());
         for (int i = 0; i < nodeList.size(); i++) {
             final Node tNode = nodeList.get(i);
+            Log.i("TAG", tNode.getName());
             MeasureData tMeasureData = measureDataList.get(i);
             new HttpUtil().getWeather(tNode.getLoc(), new HttpCallbackListener() {
                 @Override
@@ -245,9 +247,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         JSONObject topObject = new JSONObject(response);
                         JSONArray HeArray = topObject.getJSONArray("HeWeather data service 3.0");
-                        //Log.i("TAG", "asdfasdf");
                         mWeatherDataList.add(Utility.handleWeatherDataResponse(tNode.getName(), HeArray));
-                        //Log.i("TAG", "xx" +String.valueOf(mWeatherDataList.get(0).getCode()));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -259,7 +259,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-        //mWeatherDataList.add(new WeatherData());
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -272,23 +271,23 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.list_navigation_menu_item:
                         Intent intentL = new Intent(MainActivity.this, com.bishe.aqidemo.activity.ListActivity.class);
-                        intentL.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentL.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentL);
                         break;
                     case R.id.map_navigation_menu_item:
                         Intent intentM = new Intent(MainActivity.this, MapActivity.class);
-                        intentM.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentM.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentM);
                         break;
                     case R.id.community_navigation_menu_item:
                         Intent intentC = new Intent(MainActivity.this, CommunityActivity.class);
-                        //intentC.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentC.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentC);
-                        finish();
+                        onPause();
                         break;
                     case R.id.setting_navigation_menu_item:
                         Intent intentS = new Intent(MainActivity.this, SettingActivity.class);
-                        intentS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentS);
                         break;
                     default:
@@ -328,14 +327,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
-        startActivity(intent);
-        finish();
-        System.exit(0);
-    }
+//    @Override
+//    public void onBackPressed() {
+//        Intent intent = new Intent(Intent.ACTION_MAIN);
+//        intent.addCategory(Intent.CATEGORY_HOME);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);//***Change Here***
+//        startActivity(intent);
+//        finish();
+//        System.exit(0);
+//    }
 }
 

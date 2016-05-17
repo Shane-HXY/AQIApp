@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -26,6 +27,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by huangxiangyu on 16/4/29.
@@ -138,7 +145,7 @@ public class HttpUtil {
                     connection.setReadTimeout(8000);
                     InputStream inputStream = connection.getInputStream();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuffer response = new StringBuffer();
+                    StringBuilder response = new StringBuilder();
                     String line;
                     while ((line = reader.readLine()) != null) {
                         response.append(line);
@@ -177,7 +184,7 @@ public class HttpUtil {
                     InputStream inputStream = connection.getInputStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                     String str;
-                    StringBuffer buffer = new StringBuffer();
+                    StringBuilder buffer = new StringBuilder();
                     while ((str = bufferedReader.readLine()) != null) {
                         buffer.append(str);
                     }
@@ -195,5 +202,36 @@ public class HttpUtil {
                 }
             }
         }).start();
+    }
+    /**
+     * OKHttp访问网络GET方法
+     */
+    public void runOkHttpGet(final OkHttpClient client, final String url, final Handler handler) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Request request = new Request.Builder().url(url).build();
+                try {
+                    Response response = client.newCall(request).execute();
+                    String resStr = response.body().string();
+                    Message message = new Message();
+                    message.what = 0;
+                    message.obj = resStr;
+                    handler.sendMessage(message);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+    /**
+     * OKHttp访问网络POST方法
+     */
+    public String post(OkHttpClient client, String url, String json) throws IOException {
+        final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder().url(url).post(body).build();
+        Response response = client.newCall(request).execute();
+        return response.body().string();
     }
 }

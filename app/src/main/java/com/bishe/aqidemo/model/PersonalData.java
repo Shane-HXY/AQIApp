@@ -11,6 +11,8 @@ public class PersonalData {
     private double lat;
     private double lon;
     private String uname;
+    private double pm25;
+    private double pm10;
 
     public int getId() {
         return id;
@@ -58,5 +60,21 @@ public class PersonalData {
 
     public void setUname(String uname) {
         this.uname = uname;
+    }
+
+    public double getPm25() {
+        return pm25;
+    }
+
+    public void setPm25(double pm25) {
+        this.pm25 = pm25;
+    }
+
+    public double getPm10() {
+        return pm10;
+    }
+
+    public void setPm10(double pm10) {
+        this.pm10 = pm10;
     }
 }

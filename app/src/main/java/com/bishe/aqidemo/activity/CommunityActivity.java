@@ -3,11 +3,14 @@ package com.bishe.aqidemo.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +18,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bishe.aqidemo.R;
+import com.bishe.aqidemo.model.PersonalData;
+import com.bishe.aqidemo.util.HttpUtil;
+import com.bishe.aqidemo.widget.CommViewAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Created by huangxiangyu on 16/4/29.
@@ -23,6 +34,13 @@ import com.bishe.aqidemo.R;
 public class CommunityActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
+    private RecyclerView mRecyclerView;
+    private CommViewAdapter mRecyclerViewAdapter;
+    private LinearLayoutManager layoutManager;
+
+    List<PersonalData> personalDataList = new ArrayList<>();
+
+    String url = "http://10.0.2.2:8080/AqiWeb/commServlet";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +141,14 @@ public class CommunityActivity extends AppCompatActivity {
                 }
             });
         }
+//        Main Method
+        layoutManager = new LinearLayoutManager(CommunityActivity.this);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_peer);
+
+        url += "?userId=" + userId + "&where=" + "\"苍南\"";
+        OkHttpClient client = new OkHttpClient();
+        new HttpUtil().runOkHttpGet(client, url, handler);
+
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -132,18 +158,17 @@ public class CommunityActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.front_navigation_menu_item:
                         Intent intentF = new Intent(CommunityActivity.this, MainActivity.class);
-                        //intentF.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentF.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentF);
-                        finish();
                         break;
                     case R.id.list_navigation_menu_item:
                         Intent intentL = new Intent(CommunityActivity.this, com.bishe.aqidemo.activity.ListActivity.class);
-                        intentL.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentL.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentL);
                         break;
                     case R.id.map_navigation_menu_item:
                         Intent intentM = new Intent(CommunityActivity.this, MapActivity.class);
-                        intentM.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentM.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentM);
                         break;
                     case R.id.community_navigation_menu_item:
@@ -151,7 +176,7 @@ public class CommunityActivity extends AppCompatActivity {
                         break;
                     case R.id.setting_navigation_menu_item:
                         Intent intentS = new Intent(CommunityActivity.this, SettingActivity.class);
-                        intentS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intentS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intentS);
                         break;
                     default:
@@ -164,4 +189,21 @@ public class CommunityActivity extends AppCompatActivity {
             }
         });
     }
+
+    private android.os.Handler handler = new android.os.Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    //Log.i("TAG", msg.obj.toString());
+                    mRecyclerViewAdapter = new CommViewAdapter(personalDataList, CommunityActivity.this);
+                    mRecyclerView.setHasFixedSize(true);
+                    mRecyclerView.setLayoutManager(layoutManager);
+                    mRecyclerView.setAdapter(mRecyclerViewAdapter);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
 }

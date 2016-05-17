@@ -42,7 +42,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(WeatherDataViewHolder holder, final int position) {
         final int j = position;
         int id = context.getResources().getIdentifier("a"+String.valueOf(weatherDatas.get(position).getCode()), "drawable", context.getPackageName());
-        Log.i("TAG", String.valueOf(id)+"xc"+String.valueOf(weatherDatas.get(position).getCode()));
+        //Log.i("TAG", String.valueOf(id)+"xc"+String.valueOf(weatherDatas.get(position).getCode()));
         holder.cityName.setText(weatherDatas.get(position).getCityName());
         holder.nodeName.setText(weatherDatas.get(position).getNodeName());
         holder.code.setImageResource(id);
