@@ -130,7 +130,7 @@ public class CommunityActivity extends AppCompatActivity {
                     Intent intent = new Intent(CommunityActivity.this, UserActivity.class);
                     intent.putExtra("user_name", username);
                     startActivity(intent);
-                    finish();
+                    mDrawerLayout.closeDrawers();
                 }
             });
         }
@@ -145,6 +145,7 @@ public class CommunityActivity extends AppCompatActivity {
                     editor.remove("password");
                     editor.apply();
                     startActivity(intent);
+                    mDrawerLayout.closeDrawers();
                     finish();
                 }
             });
@@ -156,10 +157,10 @@ public class CommunityActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (!mEditText.getText().toString().trim().equals("")) {
                     getText = mEditText.getText().toString().trim();
-                    url = "http://10.0.2.2:8080/AqiWeb/commServlet?userId=" + userId + "&where=" + getText;
+                    url = "http://10.0.2.2:8080/AqiWeb/commServlet?where=" + getText;
                     new HttpUtil().runOkHttpGet(client, url, handler, 1);
                 } else {
-                    url = "http://10.0.2.2:8080/AqiWeb/commServlet?userId=" + userId;
+                    url = "http://10.0.2.2:8080/AqiWeb/commServlet";
                     new HttpUtil().runOkHttpGet(client, url, handler, 1);
                 }
             }
@@ -197,7 +198,7 @@ public class CommunityActivity extends AppCompatActivity {
                         break;
                     case R.id.setting_navigation_menu_item:
                         Intent intentS = new Intent(CommunityActivity.this, SettingActivity.class);
-                        intentS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intentS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intentS);
                         break;
                     default:

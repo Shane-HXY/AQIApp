@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, UserActivity.class);
                     intent.putExtra("user_name", username);
                     startActivity(intent);
-                    finish();
+                    mDrawerLayout.closeDrawers();
                 }
             });
         }
@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                     editor.remove("password");
                     editor.apply();
                     startActivity(intent);
+                    mDrawerLayout.closeDrawers();
                     finish();
                 }
             });
@@ -287,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.setting_navigation_menu_item:
                         Intent intentS = new Intent(MainActivity.this, SettingActivity.class);
-                        intentS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intentS.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intentS);
                         break;
                     default:
