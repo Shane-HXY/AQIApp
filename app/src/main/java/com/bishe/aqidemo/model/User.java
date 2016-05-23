@@ -9,16 +9,7 @@ public class User {
     private String userName;
     private String password;
     private String email;
-    private int alarm;
-
-    public User(String userName, String password) {
-        this.userName = userName;
-        this.password = password;
-    }
-
-    public User() {
-
-    }
+    private double alarm;
 
     public int getId() {
         return id;
@@ -52,11 +43,11 @@ public class User {
         this.email = email;
     }
 
-    public int getAlarm() {
+    public double getAlarm() {
         return alarm;
     }
 
-    public void setAlarm(int alarm) {
+    public void setAlarm(double alarm) {
         this.alarm = alarm;
     }
 }

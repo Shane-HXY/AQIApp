@@ -9,6 +9,7 @@ import com.bishe.aqidemo.model.MeasureData;
 import com.bishe.aqidemo.model.Node;
 import com.bishe.aqidemo.model.PersonalData;
 import com.bishe.aqidemo.model.Rank;
+import com.bishe.aqidemo.model.User;
 import com.bishe.aqidemo.model.WeatherData;
 
 import org.json.JSONArray;
@@ -147,6 +148,71 @@ public class Utility {
                     personalDatas.add(personalData);
                 }
                 return personalDatas;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * 解析个人信息Json
+     */
+    public synchronized static User handleUserInfo(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            String result = jsonObject.getString("result");
+            if (result.equals("true")) {
+                JSONObject object = jsonObject.getJSONObject("user");
+                User user = new User();
+                user.setId(object.getInt("id"));
+                user.setUserName(object.getString("username"));
+                user.setEmail(object.getString("email"));
+                user.setAlarm(Double.parseDouble(object.getString("alarm")));
+                return user;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * 发送个人信息Json
+     */
+    public synchronized static JSONObject sendUserInfo(int userId, String oldPassword, String newPassword, String email, String alarm) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("userId", userId);
+            jsonObject.put("oldPassword", oldPassword);
+            jsonObject.put("newPassword", newPassword);
+            jsonObject.put("email", email);
+            jsonObject.put("alarm", alarm);
+            return jsonObject;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * 解析measureData Json
+     */
+    public synchronized static List<MeasureData> handleMeasureData(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            String result = jsonObject.getString("result");
+            if (result.equals("true")) {
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
+                List<MeasureData> measureDataList = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject object = jsonArray.getJSONObject(i);
+                    MeasureData measureData = new MeasureData();
+                    measureData.setId(object.getInt("mId"));
+                    measureData.setNid(object.getInt("mNid"));
+                    measureData.setPm10(object.getDouble("mPm10"));
+                    measureData.setPm2_5(object.getDouble("mPm25"));
+                    measureData.setTime(object.getString("mTime"));
+                    measureDataList.add(measureData);
+                }
+                return measureDataList;
             }
         } catch (JSONException e) {
             e.printStackTrace();

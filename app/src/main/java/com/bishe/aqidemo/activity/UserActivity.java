@@ -1,6 +1,7 @@
 package com.bishe.aqidemo.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,6 +54,22 @@ public class UserActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_clear_24dp);
             actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        if (toolbar != null) {
+            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.action_edit:
+                            Intent intent = new Intent(UserActivity.this, UserEditActivity.class);
+                            startActivity(intent);
+                            break;
+                        default:
+                            break;
+                    }
+                    return false;
+                }
+            });
         }
 //        Main method
         textView = (TextView) findViewById(R.id.my_hint);

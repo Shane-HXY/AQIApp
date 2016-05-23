@@ -24,9 +24,21 @@
     <string name="action_add">添加</string>
     <string name="action_about">关于</string>
     <string name="action_edit">修改</string>
+    <string name="action_done">完成</string>
+    
+    <string name="user_edit_name">用户名</string>
+    <string name="user_edit_password">修改密码</string>
+    <string name="user_edit_password_former">请输入原密码</string>
+    <string name="user_edit_password_new">请输入新密码</string>
+    <string name="user_edit_password_renew">请再次输入新密码</string>
+    <string name="user_edit_email">修改邮箱</string>
+    <string name="user_edit_email_new">请输入新邮箱</string>
+    <string name="user_edit_alarm">修改警戒值</string>
+    <string name="user_edit_alarm_new">请输入新警戒值</string>
 
     <string name="search_hint">输入节点名..</string>
     <string name="my_post">我的发布</string>
+    <string name="my_edit">编辑个人信息</string>
 
     <string name="front_hint">你还没有关注节点</string>
     <string name="search_noNode_hint">节点未找到..</string>
@@ -41,4 +53,5 @@
     <string name="pm10_comm">pm1 0:</string>
 
     <string name="hint_where">输入城市名</string>
+    <string name="chart_title">PM2.5、PM10折线图</string>
 </resources>

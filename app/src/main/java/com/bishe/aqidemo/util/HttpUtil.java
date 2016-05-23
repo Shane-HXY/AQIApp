@@ -227,11 +227,26 @@ public class HttpUtil {
     /**
      * OKHttp访问网络POST方法
      */
-    public String post(OkHttpClient client, String url, String json) throws IOException {
-        final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder().url(url).post(body).build();
-        Response response = client.newCall(request).execute();
-        return response.body().string();
+    public void runOkHttpPost(final OkHttpClient client, final String url, final String json, final Handler handler, final int i)
+            throws IOException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                RequestBody body = RequestBody.create(JSON, json);
+                Request request = new Request.Builder().url(url).post(body).build();
+                try {
+                    Response response = client.newCall(request).execute();
+                    String resStr = response.body().string();
+                    Message message = new Message();
+                    message.what = i;
+                    message.obj = resStr;
+                    handler.sendMessage(message);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
+
 }

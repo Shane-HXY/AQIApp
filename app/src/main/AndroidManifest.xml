@@ -43,6 +43,7 @@
         <activity android:name=".activity.SettingActivity" />
         <activity android:name=".activity.UserActivity" />
         <activity android:name=".activity.AddActivity" />
+        <activity android:name=".activity.UserEditActivity" />
         <activity
             android:name=".activity.WeatherItemActivity"
             android:parentActivityName=".activity.MainActivity" />
