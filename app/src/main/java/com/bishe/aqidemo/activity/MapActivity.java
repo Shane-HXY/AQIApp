@@ -2,31 +2,71 @@ package com.bishe.aqidemo.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
+import android.provider.SyncStateContract;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.Projection;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.LatLngBounds;
+import com.amap.api.maps2d.model.Marker;
+import com.amap.api.maps2d.model.MarkerOptions;
+import com.amap.api.maps2d.model.TextOptions;
 import com.bishe.aqidemo.R;
+import com.bishe.aqidemo.model.MeasureData;
+import com.bishe.aqidemo.model.Node;
+import com.bishe.aqidemo.util.Constants;
+import com.bishe.aqidemo.util.HttpUtil;
+import com.bishe.aqidemo.util.Utility;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.OkHttpClient;
+
 
 /**
  * Created by huangxiangyu on 16/4/29.
  * In AQIDemo
  */
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements AMap.OnMarkerClickListener,
+        AMap.OnInfoWindowClickListener, AMap.OnMapLoadedListener, AMap.InfoWindowAdapter, AMap.OnMapClickListener {
+    private MarkerOptions markerOption;
+    private Marker marker;
     private MapView mapView;
     private AMap aMap;
 
     private static Boolean isExit = false;
+    String username;
+    String userId;
+    List<Node> nodeList = new ArrayList<>();
+    List<MeasureData> measureDataList = new ArrayList<>();
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
@@ -36,10 +76,12 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         mapView = (MapView) findViewById(R.id.map);
-        mapView.onCreate(savedInstanceState);
+        if (mapView != null) {
+            mapView.onCreate(savedInstanceState);
+        }
         SharedPreferences pref = getSharedPreferences("data", MODE_PRIVATE);
-        final String username = pref.getString("username", "");
-        final String userId = pref.getString("userId", "");
+        username = pref.getString("username", "");
+        userId = pref.getString("userId", "");
 //        Toolbar
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar_c);
         if (mToolbar != null) {
@@ -142,8 +184,74 @@ public class MapActivity extends AppCompatActivity {
     private void init() {
         if (aMap == null) {
             aMap = mapView.getMap();
+            setupMap();
         }
     }
+
+    private void setupMap() {
+        aMap.setOnMapLoadedListener(this);
+        aMap.setOnMapClickListener(this);
+        aMap.setOnInfoWindowClickListener(this);
+        aMap.setInfoWindowAdapter(this);
+        getConnect();
+    }
+
+    private void addMarkersToMap(List<Node> nodeList, List<MeasureData> measureDataList) {
+        if (nodeList != null && measureDataList != null) {
+            for (int i = 0; i < nodeList.size(); i++) {
+                Node node = nodeList.get(i);
+                MeasureData measureData = measureDataList.get(i);
+                LatLng ll = new LatLng(node.getLon(), node.getLat());
+                Log.i("TAG", String.valueOf(node.getLat()));
+                Log.i("TAG", String.valueOf(node.getLon()));
+                aMap.addMarker(new MarkerOptions().anchor(0.5f, 0.5f)
+                        .position(new LatLng(node.getLon(), node.getLat())).title(node.getName())
+                        .snippet("PM2.5:" + measureData.getPm2_5() + " PM10:" + measureData.getPm10()).draggable(true));
+//                markerOption = new MarkerOptions();
+//                markerOption.position(ll);
+//                markerOption.title(node.getName());
+//                markerOption.snippet("PM2.5:" + measureData.getPm2_5() + " PM10:" + measureData.getPm10());
+//                //markerOption.perspective(true);
+//                markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow));//设置图标
+//                marker = aMap.addMarker(markerOption);
+//                marker.showInfoWindow();
+                Log.i("TAG", node.getName());
+            }
+            Log.i("TAG", "result is true");
+        }
+
+    }
+
+    private void getConnect() {
+        String url = "http://10.0.2.2:8080/AqiWeb/nodeMapServlet?userId=" + userId;
+        new HttpUtil().runOkHttpGet(new OkHttpClient(), url, handler, 0);
+    }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    try {
+                        JSONObject jsonObject = new JSONObject(msg.obj.toString());
+                        Log.i("TAG", msg.obj.toString());
+                        String result = jsonObject.getString("result");
+                        JSONArray node = jsonObject.getJSONArray("node");
+                        JSONArray data = jsonObject.getJSONArray("data");
+                        nodeList = Utility.handleNodeMap(node);
+                        measureDataList = Utility.handleMeasureDataMap(data);
+                        //Log.i("TAG", nodeList.get(1).getName());
+                        //Log.i("TAG", measureDataList.get(1).getTime());
+                        addMarkersToMap(nodeList, measureDataList);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     /**
      * 方法必须重写
@@ -218,5 +326,40 @@ public class MapActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        return null;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker) {
+        return null;
+    }
+
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+    }
+
+    @Override
+    public void onMapLoaded() {
+        // 设置所有maker显示在当前可视区域地图中
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(Constants.XIAN).include(Constants.CHENGDU)
+                .include(Constants.ZHENGZHOU).include(Constants.BEIJING).build();
+        aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 10));
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+
     }
 }

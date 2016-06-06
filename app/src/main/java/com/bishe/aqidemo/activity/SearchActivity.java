@@ -57,6 +57,11 @@ public class SearchActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
     private LinearLayout hint;
+    private TextView tvNodename;
+    private TextView tvNodeLoc;
+    private TextView tvTime;
+    private TextView tvPm25;
+    private TextView tvPm10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +98,16 @@ public class SearchActivity extends AppCompatActivity {
                             closeProgressDialog();
                             //Todo：界面
                             if (flag == 1) {
-
+                                tvNodename = (TextView) findViewById(R.id.th_node_name);
+                                tvNodeLoc = (TextView) findViewById(R.id.th_node_loc);
+                                tvTime = (TextView) findViewById(R.id.th_time);
+                                tvPm25 = (TextView) findViewById(R.id.pm25_search);
+                                tvPm10 = (TextView) findViewById(R.id.pm10_search);
+                                tvNodename.setText(node.getName());
+                                tvNodeLoc.setText(node.getLoc());
+                                tvTime.setText(measureData.getTime());
+                                tvPm25.setText(measureData.getPm2_5() + "");
+                                tvPm10.setText(measureData.getPm10() + "");
                             } else {
                                 hint.setVisibility(View.VISIBLE);
                             }

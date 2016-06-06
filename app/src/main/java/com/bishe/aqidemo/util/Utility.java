@@ -219,4 +219,50 @@ public class Utility {
         }
         return null;
     }
+
+    /**
+     * 解析MeasureData
+     */
+    public synchronized static List<MeasureData> handleMeasureDataMap(JSONArray jsonArray) {
+        try {
+            List<MeasureData> measureDataList = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject object = jsonArray.getJSONObject(i);
+                MeasureData measureData = new MeasureData();
+                measureData.setId(object.getInt("measureDataId"));
+                measureData.setNid(object.getInt("measureDataNid"));
+                measureData.setPm10(object.getDouble("measureDataPm10"));
+                measureData.setPm2_5(object.getDouble("measureDataPm25"));
+                measureData.setTime(object.getString("measureDataTime"));
+                measureDataList.add(measureData);
+            }
+            return measureDataList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * 解析Node
+     */
+    public synchronized static List<Node> handleNodeMap(JSONArray jsonArray) {
+        try {
+            List<Node> nodeList = new ArrayList<>();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject object = jsonArray.getJSONObject(i);
+                Node node = new Node();
+                node.setId(object.getInt("nodeId"));
+                node.setCid(object.getInt("nodeCid"));
+                node.setLoc(object.getString("nodeLoc"));
+                node.setName(object.getString("nodeName"));
+                node.setLat(object.getDouble("nodeLat"));
+                node.setLon(object.getDouble("nodeLon"));
+                nodeList.add(node);
+            }
+            return nodeList;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
